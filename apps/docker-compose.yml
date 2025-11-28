@@ -21,6 +21,22 @@ services:
       retries: 10
       start_period: 5s
 
+  telemetry-service:
+    build:
+      context: ./telemetry-service
+      dockerfile: Dockerfile
+    container_name: telemetry-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+
   temperature-api:
     build:
       context: ./temperature-api
