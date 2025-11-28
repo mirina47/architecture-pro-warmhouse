@@ -1,0 +1,49 @@
+@startuml SmartHome_C4_Container
+!include ../template/C4_Container.puml
+
+title Диаграмма контейнеров SmartHome с интеграцией монолита (MVP)
+
+Person(user, "Пользователь", "Владелец дома, подключенного к системе SmartHome")
+Person(specialist, "Специалист по подключению", "Сотрудник, подключающий дом пользователя к SmartHome")
+
+System_Boundary(smart_home_system, "Система SmartHome") {
+    Container(web_app, "SmartHome API", "NestJS", "Основное API. Проксирует команды и данные к монолиту и микросервисам")
+    Container(warm_house, "WarmHouse (устаревший монолит)",  "Go", "Управляет системой отопления")
+    Container(device_service, "Device Service", "NestJS", "Управляет новыми устройствами")
+    Container(telemetry_service, "Telemetry Service", "NestJS", "Собирает данные с новых датчиков")
+    ContainerDb(db, "Database", "PostgreSQL", "Хранит данные пользователей, домов, устройств и показания датчиков")
+}
+
+System_Ext(sensor, "Датчик температуры", "Датчик температуры, установленный в доме")
+System_Ext(new_sensor, "Новый датчик", "Датчик состояния, установленный в доме")
+System_Ext(temperature_api, "Temperature API", "Внешний сервис, возвращающий значение температуры")
+System_Ext(heating_device, "Устройство отопления", "Устройство отопления, управляемое WarmHouse")
+System_Ext(new_device, "Новое устройство", "Устройство, управляемое Device Service")
+
+' Взаимодействие пользователей 
+Rel(user, web_app, "Отправляет команды, просматривает температуру", "REST API")
+Rel(specialist, web_app, "Подключает систему отопления дома пользователя к текущей версии системы SmartHome", "REST API")
+
+' SmartHome API
+Rel(web_app, device_service, "Команды новым устройствам", "REST API")
+Rel(web_app, warm_house, "Команды для системы отопления", "REST API")
+Rel(web_app, telemetry_service, "Запрос телеметрии с новых датчиков", "REST API")
+
+' Телеметрия 
+Rel(telemetry_service, new_sensor, "Запрашивает текущие показания новых датчиков", "HTTP/HTTPS")
+
+' Temperature API 
+Rel(warm_house, temperature_api, "Запрашивает текущие показания температуры", "REST API")
+Rel(temperature_api, sensor, "Запрашивает текущие показания температуры", "HTTP/HTTPS")
+
+' Устройства 
+Rel(warm_house, heating_device, "Управляет устройством отопления", "REST API")
+Rel(device_service, new_device, "Управляет новым устройством", "MQTT/REST")
+
+' База данных 
+Rel(warm_house, db, "Извлекает и записывает данные", "TypeORM")
+Rel(device_service, db, "Извлекает и записывает данные", "TypeORM")
+Rel(telemetry_service, db, "Извлекает и записывает данные", "TypeORM")
+
+
+@enduml

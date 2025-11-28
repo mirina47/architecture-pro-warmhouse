@@ -1,0 +1,21 @@
+@startuml WarmHouse_C4_Context
+!include ../template/C4_Context.puml
+
+title Диаграмма контекста системы WarmHouse («Тёплый дом»)
+
+Person(user, "Пользователь",  "Владелец дома, подключенного к системе WarmHouse")
+Person(specialist, "Специалист по подключению", "Сотрудник, подключающий дом пользователя к WarmHouse")
+
+System(warm_house, "WarmHouse", "Монолитное приложение для реализации системы «Тёплый дом»")
+
+System_Ext(sensor, "Датчик температуры", "Датчик температуры, установленный в доме")
+System_Ext(heatingDevice, "Устройство отопления", "Устройство отопления, установленное в доме")
+
+Rel(user, warm_house, "Управляет отоплением\n Просматривает температуру", "JSON/HTTP")
+Rel(specialist, warm_house, "Подключает систему отопления дома пользователя к текущей версии системы WarmHouse", "JSON/HTTP")
+Rel(sensor, warm_house, "Отправляет данные о температуре", "JSON/HTTP")
+
+Rel(warm_house, sensor, "Запрашивает текущие показания температуры", "JSON/HTTP")
+Rel(warm_house, heatingDevice, "Включает/выключает устройство", "JSON/HTTP")
+
+@enduml 
