@@ -1,0 +1,23 @@
+@startuml SmartHome_C4_Component_Telemetry_Service
+!include ../template/C4_Component.puml
+LAYOUT_WITH_LEGEND()
+
+title Диаграмма компонентов Telemetry Service
+
+Container_Boundary(telemetry_service, "Telemetry Service") {
+    Component(ts_controller, "Telemetry Controller", "NestJS Controller", "Контроллер, принимающий запросы на телеметрию")
+    Component(ts_service, "Telemetry Service", "NestJS Service", "Сервис, выполняющий обработку запросов")
+    Component(ts_sensor_worker, "Sensor Worker", "NestJS Worker", "Воркер, отправляющий команды для опроса датчиков")
+} 
+
+Container_Ext(web_app, "SmartHome API", "NestJS", "Основное API")
+System_Ext(new_sensor, "Новый датчик", "Датчик контроля состояния, установленный в доме")
+ContainerDb_Ext(db, "Database", "PostgreSQL", "Хранит данные пользователей, домов, устройств и показания датчиков")
+
+Rel(web_app, ts_controller, "Запрос телеметрии", "REST API")
+Rel(ts_controller, ts_service, "Вызывает методы с бизнес-логикой" )
+Rel(ts_service, db, "Извлекает и записывает данные", "TypeORM") 
+Rel(ts_service, ts_sensor_worker, "Вызывает запуск опроса датчиков")
+Rel(ts_sensor_worker, new_sensor, "Получает состояние датчика", "HTTP/HTTPS")
+
+@enduml

@@ -50,19 +50,21 @@
  
 # Задание 2. Проектирование микросервисной архитектуры
 
-В этом задании вам нужно предоставить только диаграммы в модели C4. Мы не просим вас отдельно описывать получившиеся микросервисы и то, как вы определили взаимодействия между компонентами To-Be системы. Если вы правильно подготовите диаграммы C4, они и так это покажут.
-
 **Диаграмма контейнеров (Containers)**
 
-Добавьте диаграмму.
+[Диаграмма контейнеров SmartHome («Умный дом») с интеграцией монолита (MVP)](schemas/C4_Container/SmartHome_C4_Container.png)
 
 **Диаграмма компонентов (Components)**
 
-Добавьте диаграмму для каждого из выделенных микросервисов.
+[Диаграмма компонентов Web App SmartHome API](schemas/C4_Component/SmartHome_C4_Component_Web_App.png)
+
+[Диаграмма компонентов Device Service](schemas/C4_Component/SmartHome_C4_Component_Device_Service.png)
+
+[Диаграмма компонентов Telemetry Service](schemas/C4_Component/SmartHome_C4_Component_Telemetry_Service.png)
 
 **Диаграмма кода (Code)**
 
-Добавьте одну диаграмму или несколько.
+[Диаграмма кода Telemetry Service](schemas/C4_Code/SmartHome_C4_Code_Telemetry_Service.png)
 
 # Задание 3. Разработка ER-диаграммы
 
