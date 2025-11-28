@@ -21,6 +21,22 @@ services:
       retries: 10
       start_period: 5s
 
+  smarthome-api:
+    build:
+      context: ./smarthome-api
+      dockerfile: Dockerfile
+    container_name: smarthome-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
+    ports:
+      - "8084:8084"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+
   device-service:
     build:
       context: ./device-service
