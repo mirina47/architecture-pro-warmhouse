@@ -1,0 +1,237 @@
+openapi: 3.0.3
+info:
+  title: SmartHome
+  description: Документация к системе "Умный дом"
+  version: "1.0.0"
+
+servers:
+  - url: http://localhost:8080
+    description: Локальный сервер
+
+tags:
+  - name: telemetry
+    description: Сервис телеметрии
+
+  - name: device
+    description: Сервис устройств
+
+
+
+paths:
+  /telemetry/sensorRecords/{sensorId}:
+    get:
+      tags: 
+        - telemetry
+      summary: Получение всех записей телеметрии конкретного датчика
+      operationId: findSensorRecordsBySensorId
+      parameters:
+        - name: sensorId
+          in: path
+          description: ID датчика
+          required: true
+          schema:
+            type: number
+          
+      responses:
+        '200':
+          description: Список записей телеметрии
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SensorRecord'
+              examples:
+                example:
+                  summary: Пример
+                  value:
+                    - id: 1
+                      sensorId: 1
+                      value: 35
+                      created_at: "2025-11-22T12:00:00Z"
+                      descr: "Среднее значение"
+                    - id: 2
+                      sensorId: 1
+                      value: 40
+                      created_at: "2025-11-22T13:00:00Z"
+                      descr: "Оптимальное значение"
+        '404':
+          description: Датчик не найден
+
+  /telemetry/lastSensorRecord/{sensorId}:
+    get:
+      tags: 
+        - telemetry
+      summary: Получение последней записи телеметрии конкретного датчика
+      operationId: findLastSensorRecordBySensorId
+      parameters:
+        - name: sensorId
+          in: path
+          description: ID датчика
+          required: true
+          schema:
+            type: number
+          
+      responses:
+        '200':
+          description: Последняя запись телеметрии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorRecord'
+        '404':
+          description: Датчик не найден
+
+  /telemetry/sensors/{houseId}:
+    get:
+      tags: 
+        - telemetry
+      summary: Получение всех датчиков конкретного дома
+      operationId: findSensorsByHouseId
+      parameters:
+        - name: houseId
+          in: path
+          description: ID дома
+          required: true
+          schema:
+            type: number
+          
+      responses:
+        '200':
+          description: Список датчиков
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sensor'
+              examples:
+                example:
+                  summary: Пример
+                  value:
+                    - id: 1
+                      houseId: 1
+                      is_active: false
+                      created_at: "2024-01-01T00:00:00Z"
+                      descr: "Датчик влажности, кухня"
+                    - id: 2
+                      houseId: 1
+                      is_active: true
+                      created_at: "2025-01-01T00:00:00Z"
+                      descr: "Датчик влажности, кухня"
+        '404':
+          description: Дом не найден
+
+  /devices:
+    post:
+      tags: 
+        - device
+      summary: Создание нового устройства (подключение)
+      operationId: createDevice
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+            examples:
+              example:
+                summary: Пример
+                value:
+                  house_id: 1
+                  type_id: 1
+                  serial_number: "12345qwerty"
+                  status: "off"
+                  is_active: true
+                  created_at: "2025-01-01T00:00:00Z"
+      responses:
+        '200':
+          description: Устройство создано
+        '404':
+          description: Устройство не найдено
+
+  /devices/{deviceId}:      
+    patch:
+      tags: 
+        - device
+      summary: Обновление статуса устройства
+      operationId: updateDeviceStatus
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+            examples:
+              example:
+                summary: Пример
+                value:
+                  status: "sleep mode"      
+      responses:
+        '200':
+          description: Статус устройства обновлён
+        '404':
+          description: Устройство не найдено
+
+components:
+  schemas:
+    Sensor:
+      type: object
+      properties:
+        id:
+          type: number
+        houseId:
+          type: number
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        descr:
+          type: string
+
+    SensorRecord:
+      type: object
+      properties:
+        id:
+          type: number
+        sensorId:
+          type: number
+        value:
+          type: number
+        created_at:
+          type: string
+          format: date-time
+        descr:
+          type: string
+
+    Device:
+      type: object
+      properties:
+        id:
+          type: number
+        house_id:
+          type: number
+        type_id:
+          type: number
+        serial_number:
+          type: string
+        status:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time

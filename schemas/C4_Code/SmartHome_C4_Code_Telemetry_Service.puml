@@ -1,0 +1,51 @@
+@startuml SmartHome_C4_Code_Telemetry_Service
+
+title Диаграмма кода Telemetry Service
+
+' Сущности
+class Sensor {
+  +number id
+  +number houseId
+  +boolean is_active
+  +Date created_at
+  +string descr
+}
+
+class SensorRecord {
+  +number id
+  +number sensorId
+  +number value
+  +Date created_at
+  +string descr
+}
+
+' Контроллер
+class TelemetryController {
+  -TelemetryService telemetryService
+  +Promise<SensorRecord[]> getSensorRecords(number sensorId)
+  +Promise<SensorRecord> getLastSensorRecord(number sensorId)
+  +Promise<Sensor[]> getHouseSensors(number houseId)
+}
+
+' Сервисы
+class TelemetryService {
+  +Promise<void> main()
+  +Promise<void> createSensorRecord(SensorRecord sensorRecord)
+  +Promise<SensorRecord[]> getSensorRecords(number sensorId)
+  +Promise<SensorRecord> getLastSensorRecord(number sensorId)
+  +Promise<void> updateSensorRecord(SensorRecord sensorRecord)
+  +Promise<void> deleteSensorRecord(number recordId)
+  +Promise<Sensor[]> getHouseSensors(number houseId)
+}
+
+' Воркер
+class SensorWorker <<worker file>> {
+  +void onMessage(Sensor sensor)
+}
+
+' Связи
+Sensor "1" --> "0..*" SensorRecord : has
+TelemetryController --> TelemetryService : uses
+TelemetryService --> SensorWorker : <<async message>>
+
+@enduml

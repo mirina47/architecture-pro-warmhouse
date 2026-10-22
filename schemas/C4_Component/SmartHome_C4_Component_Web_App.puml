@@ -1,0 +1,42 @@
+@startuml SmartHome_C4_Component_Web_App
+!include ../template/C4_Component.puml
+LAYOUT_WITH_LEGEND()
+
+title Диаграмма компонентов Web App SmartHome API
+
+Container_Boundary(web_app, "SmartHome API") {
+
+    Component(AuthController, "Auth Controller", "NestJS Controller", "Аутентификация и регистрация пользователей")
+    Component(UserController, "User Controller", "NestJS Controller", "Управляет данными пользователей")
+    Component(HouseController, "House Controller", "NestJS Controller", "Управляет данными домов пользователей")
+    Component(HeatingController, "Heating Controller", "NestJS Controller", "Управляет системой отопления")
+    Component(DeviceController, "Device Controller", "NestJS Controller", "Управляет устройствами пользователя")
+    Component(TelemetryController, "Telemetry Controller", "NestJS Controller", "Запрашивает данные телеметрии")
+
+    Component(AuthService, "Auth Service", "NestJS Service", "Аутентификация и авторизация")
+    Component(UserService, "User Service", "NestJS Service", "Управляет данными пользователей")
+    Component(HouseService, "House Service", "NestJS Service", "Управляет данными домов пользователей")
+    Component(WarmHouseService, "WarmHouse Service", "NestJS Service", "Управляет системой отопления")
+    Component(DeviceService, "Device Service", "NestJS Service", "Управляет устройствами пользователя")
+    Component(TelemetryService, "Telemetry Service", "NestJS Service", "Запрашивает данные телеметрии")
+}
+
+Container_Ext(warm_house, "WarmHouse (устаревший монолит)", "Go")
+Container_Ext(device_service, "Device Service", "NestJS")
+Container_Ext(telemetry_service, "Telemetry Service", "NestJS")
+ContainerDb_Ext(db, "Database", "PostgreSQL", "Хранит данные пользователей, домов, устройств и показания датчиков")
+
+Rel(AuthController, AuthService, "Вызывает методы с бизнес-логикой")
+Rel(UserController, UserService, "Вызывает методы с бизнес-логикой")
+Rel(HouseController, HouseService, "Вызывает методы с бизнес-логикой")
+Rel(HeatingController, WarmHouseService, "Вызывает методы с бизнес-логикой")
+Rel(DeviceController, DeviceService, "Вызывает методы с бизнес-логикой")
+Rel(TelemetryController, TelemetryService, "Вызывает методы с бизнес-логикой")
+
+Rel(WarmHouseService, warm_house, "Вызывает запросы для управления системой отопления", "REST API")
+Rel(DeviceService, device_service, "Вызывает запросы для управления устройствами", "REST API")
+Rel(TelemetryService, telemetry_service, "Вызывает запросы для получения телеметрии ", "REST API")
+Rel(AuthService, db, "TypeORM")
+Rel(UserService, db, "TypeORM")
+
+@enduml

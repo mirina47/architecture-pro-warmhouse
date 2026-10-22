@@ -1,0 +1,64 @@
+@startuml SmartHome_ER
+
+title ER-диаграмма системы SmartHome
+
+entity "User" as user {
+  *id : bigint <<PK>>
+  --
+  login : varchar
+  password_hash: varchar
+  name : varchar
+}
+
+entity "House" as house {
+  *id : bigint <<PK>>
+  --
+  user_id : bigint <<FK>>
+  address : varchar
+  name: varchar
+}
+
+entity "DeviceType" as devtype {
+  *id : bigint <<PK>>
+  --
+  name : varchar
+  description : varchar
+}
+
+entity "Device" as device {
+  *id : bigint <<PK>>
+  --
+  house_id : bigint <<FK>>
+  type_id : bigint <<FK>>
+  serial_number : varchar
+  status : varchar
+  is_active : boolean
+  created_at : timestamp
+}
+
+entity "Sensor" as sensor {
+  *id : bigint <<PK>>
+  --
+  house_id : bigint <<FK>>
+  is_active : boolean
+  created_at : timestamp
+  descr : varchar
+}
+
+entity "SensorRecord" as record {
+  *id : bigint <<PK>>
+  --
+  sensor_id : bigint <<FK>>
+  value : real
+  created_at : timestamp
+  descr : varchar 
+}
+
+' Связи
+user ||--o{ house : owns
+house ||--o{ device : has
+devtype ||--o{ device : type
+house ||--o{ sensor : has
+sensor ||--o{ record : produces
+
+@enduml

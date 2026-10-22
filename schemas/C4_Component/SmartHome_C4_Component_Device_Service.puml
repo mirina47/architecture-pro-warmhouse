@@ -1,0 +1,20 @@
+@startuml SmartHome_C4_Component_Device_Service
+!include ../template/C4_Component.puml
+LAYOUT_WITH_LEGEND()
+
+title Диаграмма компонентов Device Service
+
+Container_Boundary(device_service, "Device Service") {
+    Component(ds_controller, "Device Controller", "NestJS Controller", "Контроллер, принимающий запросы на управление устройствами")
+    Component(ds_service, "Device Service", "NestJS Service", "Сервис, выполняющий обработку запросов")
+} 
+
+Container_Ext(web_app, "SmartHome API", "NestJS", "Основное API")
+System_Ext(new_device, "Новое устройство", "Устройство, управляемое Device Service")
+ContainerDb_Ext(db, "Database", "PostgreSQL", "Хранит данные пользователей, домов, устройств и показания датчиков")
+
+Rel(web_app, ds_controller, "Запрос на управление устройствами", "REST API")
+Rel(ds_controller, ds_service, "Вызывает методы с бизнес-логикой" )
+Rel(ds_service, db, "Извлекает и записывает данные", "TypeORM")
+Rel(ds_service, new_device, "Отправляет команду для управления новым устройством", "HTTP/HTTPS")
+@enduml
